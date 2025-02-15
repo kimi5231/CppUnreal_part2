@@ -2,6 +2,6 @@
 class Game
 {
 public:
-	void Init();
+	void Init(const WindowInfo& info);
 	void Update();
 };
