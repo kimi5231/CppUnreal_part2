@@ -34,5 +34,10 @@ void Mesh::Render()
 {
 	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);	// 정점 연결 방식
 	CMD_LIST->IASetVertexBuffers(0, 1, &_vertexBufferView); // Slot: (0~15)
+	
+	GEngine->GetCB()->PushData(0, &_transform, sizeof(_transform));
+	GEngine->GetCB()->PushData(1, &_transform, sizeof(_transform));
+
+	// 그리기 예약
 	CMD_LIST->DrawInstanced(_vertexCount, 1, 0, 0);
 }
