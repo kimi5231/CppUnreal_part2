@@ -56,6 +56,12 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 	_cmdList->SetGraphicsRootSignature(ROOT_SIGNATURE.Get());
 	// Constant Buffer 초기화
 	GEngine->GetCB()->Clear();
+	// TableDescriptorHeap 초기화
+	GEngine->GetTableDescHeap()->Clear();
+
+	// 어떤 DescriptorHeap을 사용할 것인지 지정
+	ID3D12DescriptorHeap* descHeap = GEngine->GetTableDescHeap()->GetDescriptorHeap().Get();
+	_cmdList->SetDescriptorHeaps(1, &descHeap);
 
 	_cmdList->ResourceBarrier(1, &barrier);
 
