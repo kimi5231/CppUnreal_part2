@@ -9,15 +9,31 @@ void Game::Init(const WindowInfo& info)
 {
 	GEngine->Init(info);
 
-	// 정점 정보 셋팅
-	vector<Vertex> vec(3);
-	vec[0].pos = Vec3(0.f, 0.5f, 0.5f);
+	// 정점 정보
+	vector<Vertex> vec(4);
+	vec[0].pos = Vec3(-0.5f, 0.5f, 0.5f);
 	vec[0].color = Vec4(1.f, 0.f, 0.f, 1.f);
-	vec[1].pos = Vec3(0.5f, -0.5f, 0.5f);
-	vec[1].color = Vec4(0.f, 1.0f, 0.f, 1.f);
-	vec[2].pos = Vec3(-0.5f, -0.5f, 0.5f);
+	vec[1].pos = Vec3(0.5f, 0.5f, 0.5f);
+	vec[1].color = Vec4(0.f, 1.f, 0.f, 1.f);
+	vec[2].pos = Vec3(0.5f, -0.5f, 0.5f);
 	vec[2].color = Vec4(0.f, 0.f, 1.f, 1.f);
-	mesh->Init(vec);
+	vec[3].pos = Vec3(-0.5f, -0.5f, 0.5f);
+	vec[3].color = Vec4(0.f, 1.f, 0.f, 1.f);
+
+	// 인덱스 정보
+	vector<uint32> indexVec;
+	{
+		indexVec.push_back(0);
+		indexVec.push_back(1);
+		indexVec.push_back(2);
+	}
+	{
+		indexVec.push_back(0);
+		indexVec.push_back(2);
+		indexVec.push_back(3);
+	}
+
+	mesh->Init(vec, indexVec);
 
 	// Shader 셋팅
 	shader->Init(L"..\\Resources\\Shader\\default.hlsli");
@@ -33,21 +49,11 @@ void Game::Update()
 
 	{
 		Transform t;
-		t.offset = Vec4(0.75f, 0.f, 0.f, 0.f);
+		t.offset = Vec4(0.f, 0.f, 0.f, 0.f);
 		mesh->SetTransform(t);
 
 		mesh->Render();
 	}
-
-	{
-		Transform t;
-		t.offset = Vec4(0.f, 0.75f, 0.f, 0.f);
-		mesh->SetTransform(t);
-
-		mesh->Render();
-	}
-
-	mesh->Render();
 
 	GEngine->RenderEnd();
 }
