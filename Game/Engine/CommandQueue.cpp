@@ -52,7 +52,9 @@ void CommandQueue::RenderBegin(const D3D12_VIEWPORT* vp, const D3D12_RECT* rect)
 		D3D12_RESOURCE_STATE_PRESENT,
 		D3D12_RESOURCE_STATE_RENDER_TARGET);
 
+	// cmdList에 RootSignature 추가
 	_cmdList->SetGraphicsRootSignature(ROOT_SIGNATURE.Get());
+	// Constant Buffer 초기화
 	GEngine->GetCB()->Clear();
 
 	_cmdList->ResourceBarrier(1, &barrier);
