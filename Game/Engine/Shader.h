@@ -1,7 +1,13 @@
 #pragma once
+#include "Object.h"
+
 // Shader 파일을 읽어 Shader를 사용할 수 있게 해주는 클래스
-class Shader
+class Shader : public Object
 {
+public:
+	Shader();
+	virtual ~Shader();
+
 public:
 	void Init(const wstring& path);
 	void Update();
