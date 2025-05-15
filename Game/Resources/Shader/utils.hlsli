@@ -1,54 +1,75 @@
-cbuffer TRANSFORM_PARAMS : register(b0)
+#ifndef _UTILS_HLSLI_
+#define _UTILS_HLSLI_
+
+LightColor CalculateLightColor(int lightIndex, float3 viewNormal, float3 viewPos)
 {
-    row_major matrix matWVP;
-};
+    LightColor color = (LightColor) 0.f;
 
-cbuffer MATERIAL_PARAMS : register(b1)
-{
-    int int_0;
-    int int_1;
-    int int_2;
-    int int_3;
-    int int_4;
-    float float_0;
-    float float_1;
-    float float_2;
-    float float_3;
-    float float_4;
-};
+    float3 viewLightDir = (float3) 0.f;
 
-Texture2D tex_0 : register(t0);
-Texture2D tex_1 : register(t1);
-Texture2D tex_2 : register(t2);
-Texture2D tex_3 : register(t3);
-Texture2D tex_4 : register(t4);
+    float diffuseRatio = 0.f;
+    float specularRatio = 0.f;
+    float distanceRatio = 1.f;
 
-SamplerState sam_0 : register(s0);
+    if (g_light[lightIndex].lightType == 0)
+    {
+        // Directional Light
+        viewLightDir = normalize(mul(float4(g_light[lightIndex].direction.xyz, 0.f), g_matView).xyz);
+        diffuseRatio = saturate(dot(-viewLightDir, viewNormal));
+    }
+    else if (g_light[lightIndex].lightType == 1)
+    {
+        // Point Light
+        float3 viewLightPos = mul(float4(g_light[lightIndex].position.xyz, 1.f), g_matView).xyz;
+        viewLightDir = normalize(viewPos - viewLightPos);
+        diffuseRatio = saturate(dot(-viewLightDir, viewNormal));
 
-struct VS_IN
-{
-    float3 pos : POSITION;
-    float2 uv : TEXCOORD;
-};
+        float dist = distance(viewPos, viewLightPos);
+        if (g_light[lightIndex].range == 0.f)
+            distanceRatio = 0.f;
+        else
+            distanceRatio = saturate(1.f - pow(dist / g_light[lightIndex].range, 2));
+    }
+    else
+    {
+        // Spot Light
+        float3 viewLightPos = mul(float4(g_light[lightIndex].position.xyz, 1.f), g_matView).xyz;
+        viewLightDir = normalize(viewPos - viewLightPos);
+        diffuseRatio = saturate(dot(-viewLightDir, viewNormal));
 
-struct VS_OUT
-{
-    float4 pos : SV_Position;
-    float2 uv : TEXCOORD;
-};
+        if (g_light[lightIndex].range == 0.f)
+            distanceRatio = 0.f;
+        else
+        {
+            float halfAngle = g_light[lightIndex].angle / 2;
 
-VS_OUT VS_Main(VS_IN input)
-{
-    VS_OUT output = (VS_OUT) 0;
+            float3 viewLightVec = viewPos - viewLightPos;
+            float3 viewCenterLightDir = normalize(mul(float4(g_light[lightIndex].direction.xyz, 0.f), g_matView).xyz);
 
-    output.pos = mul(float4(input.pos, 1.f), matWVP);
-    output.uv = input.uv;
+            float centerDist = dot(viewLightVec, viewCenterLightDir);
+            distanceRatio = saturate(1.f - centerDist / g_light[lightIndex].range);
 
-    return output;
-}
+            float lightAngle = acos(dot(normalize(viewLightVec), viewCenterLightDir));
 
-float4 PS_Main(VS_OUT input) : SV_Target
-{
-    float4 color = tex_0.Sample(sam_0, input.uv);
+            if (centerDist < 0.f || centerDist > g_light[lightIndex].range) // 최대 거리를 벗어났는지
+                distanceRatio = 0.f;
+            else if (lightAngle > halfAngle) // 최대 시야각을 벗어났는지
+                distanceRatio = 0.f;
+            else // 거리에 따라 적절히 세기를 조절
+                distanceRatio = saturate(1.f - pow(centerDist / g_light[lightIndex].range, 2));
+        }
+    }
+
+    float3 reflectionDir = normalize(viewLightDir + 2 * (saturate(dot(-viewLightDir, viewNormal)) * viewNormal));
+    float3 eyeDir = normalize(viewPos);
+    specularRatio = saturate(dot(-eyeDir, reflectionDir));
+    specularRatio = pow(specularRatio, 2);
+
+    color.diffuse = g_light[lightIndex].color.diffuse * diffuseRatio * distanceRatio;
+    color.ambient = g_light[lightIndex].color.ambient * distanceRatio;
+    color.specular = g_light[lightIndex].color.specular * specularRatio * distanceRatio;
+
     return color;
 }
+
+#endif
