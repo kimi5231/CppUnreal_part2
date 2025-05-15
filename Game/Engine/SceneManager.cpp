@@ -22,17 +22,8 @@ void SceneManager::Update()
 
 void SceneManager::Render()
 {
-	if (_activeScene == nullptr)
-		return;
-
-	const vector<shared_ptr<GameObject>>& gameObjects = _activeScene->GetGameObjects();
-	for (auto& gameObject : gameObjects)
-	{
-		if (gameObject->GetCamera() == nullptr)
-			continue;
-
-		gameObject->GetCamera()->Render();
-	}
+	if (_activeScene)
+		_activeScene->Render();
 }
 
 void SceneManager::LoadScene(wstring sceneName)
