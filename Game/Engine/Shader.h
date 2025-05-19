@@ -1,6 +1,28 @@
 #pragma once
 #include "Object.h"
 
+enum class RASTERIZER_TYPE
+{
+	CULL_NONE,
+	CULL_FRONT,
+	CULL_BACK,
+	WIREFRAME,
+};
+
+enum class DEPTH_STENCIL_TYPE
+{
+	LESS,
+	LESS_EQUAL,
+	GREATER,
+	GREATER_EQUAL,
+};
+
+struct ShaderInfo
+{
+	RASTERIZER_TYPE rasterizerType = RASTERIZER_TYPE::CULL_BACK;
+	DEPTH_STENCIL_TYPE depthStencilType = DEPTH_STENCIL_TYPE::LESS;
+};
+
 // Shader 파일을 읽어 Shader를 사용할 수 있게 해주는 클래스
 class Shader : public Object
 {
@@ -9,7 +31,7 @@ public:
 	virtual ~Shader();
 
 public:
-	void Init(const wstring& path);
+	void Init(const wstring& path, ShaderInfo info = ShaderInfo());
 	void Update();
 
 private:
