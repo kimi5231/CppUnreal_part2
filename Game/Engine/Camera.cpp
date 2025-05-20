@@ -6,6 +6,7 @@
 #include "GameObject.h"
 #include "MeshRenderer.h"
 #include "Engine.h"
+#include "Frustum.h"
 
 Matrix Camera::S_MatView;
 Matrix Camera::S_MatProjection;
@@ -32,6 +33,8 @@ void Camera::FinalUpdate()
 
 	S_MatView = _matView;
 	S_MatProjection = _matProjection;
+
+	_frustum.FinalUpdate();
 }
 
 void Camera::Render()
@@ -44,6 +47,16 @@ void Camera::Render()
 	{
 		if (gameObject->GetMeshRenderer() == nullptr)
 			continue;
+
+		if (gameObject->GetCheckFrustum())
+		{
+			if (_frustum.ContainsSphere(
+				gameObject->GetTransform()->GetWorldPosition(),
+				gameObject->GetTransform()->GetBoundingSphereRadius()) == false)
+			{
+				continue;
+			}
+		}
 
 		gameObject->GetMeshRenderer()->Render();
 	}
