@@ -19,11 +19,11 @@ void Mesh::Init(const vector<Vertex>& vertexBuffer, const vector<uint32>& indexB
 
 void Mesh::Render()
 {
-	CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);	// 정점 연결 방식
-	CMD_LIST->IASetVertexBuffers(0, 1, &_vertexBufferView); // Slot: (0~15)
-	CMD_LIST->IASetIndexBuffer(&_indexBufferView);
+	GRAPHICS_CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);	// 정점 연결 방식
+	GRAPHICS_CMD_LIST->IASetVertexBuffers(0, 1, &_vertexBufferView); // Slot: (0~15)
+	GRAPHICS_CMD_LIST->IASetIndexBuffer(&_indexBufferView);
 
-	GEngine->GetTableDescHeap()->CommitTable();
+	GEngine->GetGraphicsDescHeap()->CommitTable();
 
 	// 그리기 예약
 	
@@ -31,7 +31,7 @@ void Mesh::Render()
 	//CMD_LIST->DrawInstanced(_vertexCount, 1, 0, 0);
 
 	// Index로 그리기
-	CMD_LIST->DrawIndexedInstanced(_indexCount, 1, 0, 0, 0);
+	GRAPHICS_CMD_LIST->DrawIndexedInstanced(_indexCount, 1, 0, 0, 0);
 }
 
 void Mesh::CreateVertexBuffer(const vector<Vertex>& buffer)
