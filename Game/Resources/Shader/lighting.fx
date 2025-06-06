@@ -45,6 +45,34 @@ PS_OUT PS_DirLight(VS_OUT input)
     float3 viewNormal = g_tex_1.Sample(g_sam_0, input.uv).xyz;
 
     LightColor color = CalculateLightColor(g_int_0, viewNormal, viewPos);
+    
+    // 그림자
+    if (length(color.diffuse) != 0)
+    {
+        matrix shadowCameraVP = g_mat_0;
+
+        float4 worldPos = mul(float4(viewPos.xyz, 1.f), g_matViewInv);
+        float4 shadowClipPos = mul(worldPos, shadowCameraVP);
+        float depth = shadowClipPos.z / shadowClipPos.w;
+
+        // uv 좌표 변환
+        // x [-1 ~ 1] -> u [0 ~ 1]
+        // y [1 ~ -1] -> v [0 ~ 1]
+        float2 uv = shadowClipPos.xy / shadowClipPos.w;
+        uv.y = -uv.y;
+        uv = uv * 0.5 + 0.5;
+
+        if (0 < uv.x && uv.x < 1 && 0 < uv.y && uv.y < 1)
+        {
+            float shadowDepth = g_tex_2.Sample(g_sam_0, uv).x;
+            if (shadowDepth > 0 && depth > shadowDepth + 0.00001f)
+            {
+                color.diffuse *= 0.5f;
+                color.specular = (float4) 0.f;
+            }
+        }
+    }
+    
     output.diffuse = color.diffuse + color.ambient;
     output.specular = color.specular;
 

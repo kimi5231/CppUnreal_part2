@@ -77,6 +77,10 @@ void Shader::CreateGraphicsShader(const wstring& path, ShaderInfo info, const st
 		_graphicsPipelineDesc.NumRenderTargets = 1;
 		_graphicsPipelineDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 		break;
+	case SHADER_TYPE::SHADOW:
+		_graphicsPipelineDesc.NumRenderTargets = 1;
+		_graphicsPipelineDesc.RTVFormats[0] = DXGI_FORMAT_R32_FLOAT;
+		break;
 	}
 
 	switch (info.rasterizerType)
