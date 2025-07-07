@@ -25,6 +25,9 @@
     <Filter Include="Object\Resource">
       <UniqueIdentifier>{a6ef8783-ebd4-496f-9adb-6fb242d1f2a5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object\Component\Collider">
+      <UniqueIdentifier>{c9d76f82-72a8-4144-8195-14956398d969}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -131,6 +134,12 @@
     </ClCompile>
     <ClCompile Include="Terrain.cpp">
       <Filter>Object\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseCollider.cpp">
+      <Filter>Object\Component\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereCollider.cpp">
+      <Filter>Object\Component\Collider</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -241,6 +250,12 @@
     </ClInclude>
     <ClInclude Include="Terrain.h">
       <Filter>Object\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseCollider.h">
+      <Filter>Object\Component\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereCollider.h">
+      <Filter>Object\Component\Collider</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
